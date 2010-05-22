@@ -20,6 +20,7 @@ class RsyncBackup
     @rsync_opts << '--dry-run' unless for_real
     raise "Destination not found: #{@destination}" unless File.exists?(@destination)
     @paths.each do |path|
+      # TODO: Check all paths before running.
       raise "Path not found: #{path}" unless File.exists?(path)
       puts "- #{rsync} #{path} #{@destination}"
       system "#{rsync} #{path} #{@destination}"
