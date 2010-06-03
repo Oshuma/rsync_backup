@@ -1,4 +1,5 @@
 # Simple rsync backup.
+# TODO: A binary with commandline options.
 class RsyncBackup
   def initialize(paths, destination, options = {})
     @paths = paths.map { |p| File.expand_path(p) }
@@ -19,17 +20,19 @@ class RsyncBackup
   def run!(for_real = true)
     @rsync_opts << '--dry-run' unless for_real
     raise "Destination not found: #{@destination}" unless File.exists?(@destination)
-    @paths.each do |path|
-      # TODO: Check all paths before running.
-      raise "Path not found: #{path}" unless File.exists?(path)
-      puts "- #{rsync} #{path} #{@destination}"
-      system "#{rsync} #{path} #{@destination}"
-    end
+    # Check the existence of the paths before running.
+    @paths.each { |path| raise "Path not found: #{path}" unless File.exists?(path) }
+    @paths.each { |path| backup(path) }
   end
 
   private
 
   def rsync
     "#{@rsync_bin} #{@rsync_opts.join(' ')}"
+  end
+
+  def backup(path)
+    puts "- #{rsync} #{path} #{@destination}"
+    system "#{rsync} #{path} #{@destination}"
   end
 end

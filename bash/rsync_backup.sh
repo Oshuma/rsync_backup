@@ -48,14 +48,17 @@ if [ $answer != "yes" ]; then
   exit
 fi
 
-
+# Check the existence of the paths.
 for path in $paths; do
-  # TODO: Check all paths before running.
   if [ ! -e $path ]; then
-    echo "Path not found: $path"
+    echo -e "\nPath not found: $path"
+    echo "Aborting."
     exit
   fi
+done
 
+# Run the backup.
+for path in $paths; do
   command="${rsync_bin} ${rsync_opts[*]} $path $destination"
   echo "- $command"
   $command
